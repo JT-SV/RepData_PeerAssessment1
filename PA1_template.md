@@ -1,6 +1,6 @@
 # Reproducible Research Peer Assessment 1
 JT  
-June 23, 2017  
+June 25, 2017  
 
 ## Loading and preprocessing the data
 
@@ -14,6 +14,7 @@ d_clean<-data[!is.na(data$steps),]
 
 
 ```r
+# Aggregate by day (i.e. date), then plot histogram
 d_date<-aggregate(d_clean$steps,list(d_clean$date),mean)
 names(d_date)<-c("date","steps")
 hist(d_date$steps,main="Average Steps Per Day",xlab="Steps")
@@ -35,6 +36,7 @@ The median number of average steps per day is 37.3784722.
 
 
 ```r
+# Aggregate across days by interval, then plot
 d_int<-aggregate(d_clean$steps,list(d_clean$interval),mean)
 names(d_int)<-c("interval","steps")
 with(d_int,plot(interval,steps,type="l",xlab="5-minute Interval",ylab="Steps",
@@ -51,7 +53,7 @@ max_interval<-d_int[max_index,"interval"]
 max_steps<-d_int[max_index,"steps"]
 ```
 
-Interval 835 contains the maximum average number of steps: 206.1698113.    
+Interval 835 contains the maximum average number of steps: 206.1698113. I.e the 5-minute interval starting at 8:35 in the morning.
 
 ## Imputing missing values
 
@@ -63,7 +65,7 @@ n_na<-dim(d_na)[1]
 
 There are 2304 rows with NA in the data set.
 
-Impute the missing step values using the average steps for the interval:
+Impute the missing step values using the average steps for the interval, performing some checks as well:
 
 
 ```r
@@ -73,7 +75,11 @@ d_na["steps"]<- d_int$steps[match(d_na$interval,d_int$interval)]
 d_complete<-rbind(d_clean,d_na)
 # Reorder
 d_complete<-d_complete[order(as.numeric(row.names(d_complete))),]
-# Confirm it all looks good
+```
+
+
+```r
+# Confirm it all looks good. First the original data
 head(data,n=3)
 ```
 
@@ -85,6 +91,7 @@ head(data,n=3)
 ```
 
 ```r
+# Then the aggregated-by interval data which is used to fill in the NAs
 d_int[d_int$interval %in% c(0,5,10),]
 ```
 
@@ -96,6 +103,7 @@ d_int[d_int$interval %in% c(0,5,10),]
 ```
 
 ```r
+# Here is the result in the "complete" dataset
 head(d_complete,n=3)
 ```
 
@@ -107,7 +115,7 @@ head(d_complete,n=3)
 ```
 
 ```r
-# Now check one data point for un-imputed data
+# Now check one data point in original vs "complete" for un-imputed data - looks good
 data[800,]
 ```
 
@@ -128,9 +136,10 @@ d_complete[800,]
 Now the summary measures and the  histogram
 
 ```r
-d_complete_agg<-aggregate(d_complete$steps,list(d_complete$date),mean)
-names(d_complete_agg)<-c("date","steps")
-hist(d_complete_agg$steps,
+#Aggregate the "complete" dataset by day (date), then plot a histogram
+d_complete_date<-aggregate(d_complete$steps,list(d_complete$date),mean)
+names(d_complete_date)<-c("date","steps")
+hist(d_complete_date$steps,
      main="Average steps per day (Missing Data Imputed)",xlab="Steps")
 ```
 
@@ -138,8 +147,8 @@ hist(d_complete_agg$steps,
 
 
 ```r
-m<-mean(d_complete_agg$steps)
-md<-median(d_complete_agg$steps)
+m<-mean(d_complete_date$steps)
+md<-median(d_complete_date$steps)
 ```
 
 The mean number of average steps per day is 37.3825996.  
@@ -149,7 +158,7 @@ The means are identical in the unimputed and imputed datasets, not so the median
 As a double check, let's look at the data underlying the calculated means.  They differ, though the calculated means do not:
 
 ```r
-matrix(c(sum(d_date$steps),sum(d_complete_agg$steps),dim(d_date)[1],dim(d_complete_agg)[1]),c(2,2))
+matrix(c(sum(d_date$steps),sum(d_complete_date$steps),dim(d_date)[1],dim(d_complete_date)[1]),c(2,2))
 ```
 
 ```
@@ -159,17 +168,18 @@ matrix(c(sum(d_date$steps),sum(d_complete_agg$steps),dim(d_date)[1],dim(d_comple
 ```
 
 ```r
-all.equal(sum(d_complete_agg$steps)/dim(d_complete_agg)[1],
+all.equal(sum(d_complete_date$steps)/dim(d_complete_date)[1],
           sum(d_date$steps)/dim(d_date)[1])
 ```
 
 ```
 ## [1] TRUE
 ```
+The sums and counts differ between complete and original calculations but the equality of the means holds (by several decimal places) so it doesn't look like a problem.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-It appears so... The number of steps is higher througout the day during the weekends.  The opposite is true in the mornings.
+It appears so... The number of steps is higher throughout the day during the weekends.  The opposite is true in the mornings.
 
 ```r
 library(lattice)
