@@ -11,12 +11,13 @@ data<-read.csv(unz("activity.zip","activity.csv"),stringsAsFactors = FALSE)
 d_clean<-data[!is.na(data$steps),]
 ```
 ## What is mean total number of steps taken per day?
-
+"For this part of the assignment, you can ignore the missing values in the dataset."
 
 ```r
-# Aggregate by day (i.e. date), then plot histogram
+# Calculate the total number of steps taken per day - aggregate by day (i.e. date)
 d_date<-aggregate(d_clean$steps,list(d_clean$date),mean)
 names(d_date)<-c("date","steps")
+# Plot
 hist(d_date$steps,main="Average Steps Per Day",xlab="Steps")
 ```
 
@@ -32,11 +33,11 @@ md<-median(d_date$steps)
 The mean number of average steps per day is 37.3825996.  
 The median number of average steps per day is 37.3784722.  
 
-## What is the average daily activity pattern?
+## What is the average daily activity pattern?  
 
 
 ```r
-# Aggregate across days by interval, then plot
+# Aggregate across days by interval, then plot the time series
 d_int<-aggregate(d_clean$steps,list(d_clean$interval),mean)
 names(d_int)<-c("interval","steps")
 with(d_int,plot(interval,steps,type="l",xlab="5-minute Interval",ylab="Steps",
@@ -116,13 +117,15 @@ head(d_complete,n=3)
 
 ```r
 # Now check one data point in original vs "complete" for un-imputed data - looks good
-rbind(data[800,],d_complete[800,])
+check<-rbind(data[800,],d_complete[800,])
+row.names(check)<-c("Original","Imputed")
+check
 ```
 
 ```
-##      steps       date interval
-## 800     26 2012-10-03     1835
-## 8001    26 2012-10-03     1835
+##          steps       date interval
+## Original    26 2012-10-03     1835
+## Imputed     26 2012-10-03     1835
 ```
 
 Now the summary measures and the  histogram
@@ -144,36 +147,35 @@ md<-median(d_complete_date$steps)
 ```
 
 The mean number of average steps per day is 37.3825996.  
-The median number of average steps per day is 37.3825996. 
-The means are identical in the unimputed and imputed datasets, not so the median, which has changed a tiny bit.
+The median number of average steps per day is 37.3825996.  
 
-As a double check, let's look at the data underlying the calculated means.  They differ, though the calculated means do not:
+The means are identical in the unimputed and imputed datasets, not so the median, which has changed a tiny bit.  I.e. the impact of imputing missing data seems negligible.
 
-```r
-matrix(c(sum(d_date$steps),sum(d_complete_date$steps),dim(d_date)[1],dim(d_complete_date)[1]),c(2,2))
-```
-
-```
-##          [,1] [,2]
-## [1,] 1981.278   53
-## [2,] 2280.339   61
-```
+As a double check, let's look at the data underlying the calculated means for original vs imputed.  They sums of steps are different and the number of days in the calculation are different; however, the calculated means are equal to four decimal places:
 
 ```r
-all.equal(sum(d_complete_date$steps)/dim(d_complete_date)[1],
-          sum(d_date$steps)/dim(d_date)[1])
+check<-data.frame(matrix(c(sum(d_date$steps),sum(d_complete_date$steps),
+                       dim(d_date)[1],dim(d_complete_date)[1],
+                       sum(d_date$steps)/dim(d_date)[1],
+                       sum(d_complete_date$steps)/dim(d_complete_date)[1]),
+                      c(2,2)))
+names(check)<-c("Sum of steps","Number of days","Mean")
+row.names(check)<-c("Original data set","Imputed data set")
+check
 ```
 
 ```
-## [1] TRUE
+##                   Sum of steps Number of days    Mean
+## Original data set     1981.278             53 37.3826
+## Imputed data set      2280.339             61 37.3826
 ```
-The sums and counts differ between complete and original calculations but the equality of the means holds (by several decimal places) so it doesn't look like a problem.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 It appears so... The number of steps is higher throughout the day during the weekends.  The opposite is true in the mornings.
 
 ```r
+# Prepare for a quick panel plot
 library(lattice)
 # Define a weekday vs. weekend function and a new column in the data
 wd<-function(d){ d<-weekdays(as.Date(d))
