@@ -209,10 +209,26 @@ md&lt;-sprintf(&quot;%8.2f&quot;,median(d_complete_date$steps))</code></pre>
 <p>The mean number of average steps per day is 10766.19.<br />
 The median number of average steps per day is 10766.19.</p>
 <p>The means are identical in the unimputed and imputed datasets, not so the median, which is now identical to the mean. I.e. the impact of imputing missing data seems negligible. The equality of means between non-imputed and imputed and of the mean and median in imputed is due to entire days missing and therefore the average daily total number of steps ends up being the total number of steps for those days.</p>
-<pre class="r"><code># d_int is used to replace a whole missing day's intervals
+<pre class="r"><code># It turns out d_int is used to replace entire days.  Entire days of data are missing..
+check&lt;-aggregate(data[is.na(data$steps),&quot;date&quot;],list(data[is.na(data$steps),&quot;date&quot;]),length)
+names(check)&lt;-c(&quot;Date&quot;,&quot;Count&quot;)
+check</code></pre>
+<pre><code>##         Date Count
+## 1 2012-10-01   288
+## 2 2012-10-08   288
+## 3 2012-11-01   288
+## 4 2012-11-04   288
+## 5 2012-11-09   288
+## 6 2012-11-10   288
+## 7 2012-11-14   288
+## 8 2012-11-30   288</code></pre>
+<pre class="r"><code># There are 288 intervals in a day..
+dim(d_int)[1]</code></pre>
+<pre><code>## [1] 288</code></pre>
+<pre class="r"><code># The total steps is the mean steps
 sum(d_int$steps)</code></pre>
 <pre><code>## [1] 10766.19</code></pre>
-<pre class="r"><code># When data was imputed the ENTIRE DAY was imputed.  Looking at the imputed dataset -
+<pre class="r"><code># The aggregated imputed data looks like so
 check&lt;-aggregate(d_na$steps,list(d_na$date),sum)
 names(check)&lt;-c(&quot;Date&quot;,&quot;Steps&quot;)
 check</code></pre>

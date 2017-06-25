@@ -155,7 +155,35 @@ The means are identical in the unimputed and imputed datasets, not so the median
 
 
 ```r
-# d_int is used to replace a whole missing day's intervals
+# It turns out d_int is used to replace entire days.  Entire days of data are missing..
+check<-aggregate(data[is.na(data$steps),"date"],list(data[is.na(data$steps),"date"]),length)
+names(check)<-c("Date","Count")
+check
+```
+
+```
+##         Date Count
+## 1 2012-10-01   288
+## 2 2012-10-08   288
+## 3 2012-11-01   288
+## 4 2012-11-04   288
+## 5 2012-11-09   288
+## 6 2012-11-10   288
+## 7 2012-11-14   288
+## 8 2012-11-30   288
+```
+
+```r
+# There are 288 intervals in a day..
+dim(d_int)[1]
+```
+
+```
+## [1] 288
+```
+
+```r
+# The total steps is the mean steps
 sum(d_int$steps)
 ```
 
@@ -164,7 +192,7 @@ sum(d_int$steps)
 ```
 
 ```r
-# When data was imputed the ENTIRE DAY was imputed.  Looking at the imputed dataset -
+# The aggregated imputed data looks like so
 check<-aggregate(d_na$steps,list(d_na$date),sum)
 names(check)<-c("Date","Steps")
 check
