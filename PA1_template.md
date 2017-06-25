@@ -15,10 +15,10 @@ d_clean<-data[!is.na(data$steps),]
 
 ```r
 # Calculate the total number of steps taken per day - aggregate by day (i.e. date)
-d_date<-aggregate(d_clean$steps,list(d_clean$date),mean)
+d_date<-aggregate(d_clean$steps,list(d_clean$date),sum)
 names(d_date)<-c("date","steps")
 # Plot
-hist(d_date$steps,main="Average Steps Per Day",xlab="Steps")
+hist(d_date$steps,main="Total Steps Per Day",xlab="Steps")
 ```
 
 ![](PA1_template_files/figure-html/steps_per_day-1.png)<!-- -->
@@ -26,12 +26,12 @@ hist(d_date$steps,main="Average Steps Per Day",xlab="Steps")
 Summary measures for the average number of steps per day:
 
 ```r
-m<-mean(d_date$steps)
-md<-median(d_date$steps)
+m<-sprintf("%8.2f",mean(d_date$steps))
+md<-sprintf("%8.2f",median(d_date$steps))
 ```
 
-The mean number of average steps per day is 37.3825996.  
-The median number of average steps per day is 37.3784722.  
+The mean number of steps per day is 10766.19.  
+The median number of steps per day is 10765.00.  
 
 ## What is the average daily activity pattern?  
 
@@ -60,13 +60,14 @@ Interval 835 contains the maximum average number of steps: 206.1698113. I.e the 
 
 
 ```r
+# Separate out the data that needs to be imputed
 d_na<-data[is.na(data$steps),]
 n_na<-dim(d_na)[1]
 ```
 
 There are 2304 rows with NA in the data set.
 
-Impute the missing step values using the average steps for the interval, performing some checks as well:
+Impute the missing step values using the average number of steps for the intervals with available data, performing some checks as well:
 
 
 ```r
@@ -132,43 +133,55 @@ Now the summary measures and the  histogram
 
 ```r
 #Aggregate the "complete" dataset by day (date), then plot a histogram
-d_complete_date<-aggregate(d_complete$steps,list(d_complete$date),mean)
+d_complete_date<-aggregate(d_complete$steps,list(d_complete$date),sum)
 names(d_complete_date)<-c("date","steps")
 hist(d_complete_date$steps,
-     main="Average steps per day (Missing Data Imputed)",xlab="Steps")
+     main="Total steps per day (Missing Data Imputed)",xlab="Steps")
 ```
 
 ![](PA1_template_files/figure-html/complete_hist-1.png)<!-- -->
 
 
 ```r
-m<-mean(d_complete_date$steps)
-md<-median(d_complete_date$steps)
+m<-sprintf("%8.2f",mean(d_complete_date$steps))
+md<-sprintf("%8.2f",median(d_complete_date$steps))
 ```
 
-The mean number of average steps per day is 37.3825996.  
-The median number of average steps per day is 37.3825996.  
+The mean number of average steps per day is 10766.19.  
+The median number of average steps per day is 10766.19.  
 
-The means are identical in the unimputed and imputed datasets, not so the median, which has changed a tiny bit.  I.e. the impact of imputing missing data seems negligible.
+The means are identical in the unimputed and imputed datasets, not so the median, which is now identical to the mean.  I.e. the impact of imputing missing data seems negligible. The equality of means between non-imputed and imputed and of the mean and median in imputed is due to entire days missing and therefore the average daily total number of steps ends up being the total number of steps for those days.
 
-As a double check, let's look at the data underlying the calculated means for original vs imputed.  They sums of steps are different and the number of days in the calculation are different; however, the calculated means are equal to four decimal places:
+
 
 ```r
-check<-data.frame(matrix(c(sum(d_date$steps),sum(d_complete_date$steps),
-                       dim(d_date)[1],dim(d_complete_date)[1],
-                       sum(d_date$steps)/dim(d_date)[1],
-                       sum(d_complete_date$steps)/dim(d_complete_date)[1]),
-                      c(2,2)))
-names(check)<-c("Sum of steps","Number of days","Mean")
-row.names(check)<-c("Original data set","Imputed data set")
+# d_int is used to replace a whole missing day's intervals
+sum(d_int$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+# When data was imputed the ENTIRE DAY was imputed.  Looking at the imputed dataset -
+check<-aggregate(d_na$steps,list(d_na$date),sum)
+names(check)<-c("Date","Steps")
 check
 ```
 
 ```
-##                   Sum of steps Number of days    Mean
-## Original data set     1981.278             53 37.3826
-## Imputed data set      2280.339             61 37.3826
+##         Date    Steps
+## 1 2012-10-01 10766.19
+## 2 2012-10-08 10766.19
+## 3 2012-11-01 10766.19
+## 4 2012-11-04 10766.19
+## 5 2012-11-09 10766.19
+## 6 2012-11-10 10766.19
+## 7 2012-11-14 10766.19
+## 8 2012-11-30 10766.19
 ```
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
