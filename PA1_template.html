@@ -188,12 +188,10 @@ head(d_complete,n=3)</code></pre>
 ## 2 0.3396226 2012-10-01        5
 ## 3 0.1320755 2012-10-01       10</code></pre>
 <pre class="r"><code># Now check one data point in original vs &quot;complete&quot; for un-imputed data - looks good
-data[800,]</code></pre>
-<pre><code>##     steps       date interval
-## 800    26 2012-10-03     1835</code></pre>
-<pre class="r"><code>d_complete[800,]</code></pre>
-<pre><code>##     steps       date interval
-## 800    26 2012-10-03     1835</code></pre>
+rbind(data[800,],d_complete[800,])</code></pre>
+<pre><code>##      steps       date interval
+## 800     26 2012-10-03     1835
+## 8001    26 2012-10-03     1835</code></pre>
 <p>Now the summary measures and the histogram</p>
 <pre class="r"><code>#Aggregate the &quot;complete&quot; dataset by day (date), then plot a histogram
 d_complete_date&lt;-aggregate(d_complete$steps,list(d_complete$date),mean)

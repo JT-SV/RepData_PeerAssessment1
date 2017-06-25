@@ -116,21 +116,13 @@ head(d_complete,n=3)
 
 ```r
 # Now check one data point in original vs "complete" for un-imputed data - looks good
-data[800,]
+rbind(data[800,],d_complete[800,])
 ```
 
 ```
-##     steps       date interval
-## 800    26 2012-10-03     1835
-```
-
-```r
-d_complete[800,]
-```
-
-```
-##     steps       date interval
-## 800    26 2012-10-03     1835
+##      steps       date interval
+## 800     26 2012-10-03     1835
+## 8001    26 2012-10-03     1835
 ```
 
 Now the summary measures and the  histogram

@@ -80,8 +80,7 @@ d_int[d_int$interval %in% c(0,5,10),]
 # Here is the result in the "complete" dataset
 head(d_complete,n=3)
 # Now check one data point in original vs "complete" for un-imputed data - looks good
-data[800,]
-d_complete[800,]
+rbind(data[800,],d_complete[800,])
 ```
 
 Now the summary measures and the  histogram
