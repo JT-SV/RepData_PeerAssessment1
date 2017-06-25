@@ -51,10 +51,10 @@ So, which interval contains the maximum number of steps?
 ```r
 max_index<-which.max(d_int$steps)
 max_interval<-d_int[max_index,"interval"]
-max_steps<-d_int[max_index,"steps"]
+max_steps<-sprintf("%5.2f",d_int[max_index,"steps"])
 ```
 
-Interval 835 contains the maximum average number of steps: 206.1698113. I.e the 5-minute interval starting at 8:35 in the morning.
+Interval 835 contains the maximum average number of steps: 206.17. I.e the 5-minute interval starting at 8:35 in the morning.
 
 ## Imputing missing values
 
@@ -129,7 +129,7 @@ check
 ## Imputed     26 2012-10-03     1835
 ```
 
-Now the summary measures and the  histogram
+Now the histogram and summary measures
 
 ```r
 #Aggregate the "complete" dataset by day (date), then plot a histogram

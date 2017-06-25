@@ -156,8 +156,8 @@ with(d_int,plot(interval,steps,type=&quot;l&quot;,xlab=&quot;5-minute Interval&q
 <p>So, which interval contains the maximum number of steps?</p>
 <pre class="r"><code>max_index&lt;-which.max(d_int$steps)
 max_interval&lt;-d_int[max_index,&quot;interval&quot;]
-max_steps&lt;-d_int[max_index,&quot;steps&quot;]</code></pre>
-<p>Interval 835 contains the maximum average number of steps: 206.1698113. I.e the 5-minute interval starting at 8:35 in the morning.</p>
+max_steps&lt;-sprintf(&quot;%5.2f&quot;,d_int[max_index,&quot;steps&quot;])</code></pre>
+<p>Interval 835 contains the maximum average number of steps: 206.17. I.e the 5-minute interval starting at 8:35 in the morning.</p>
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
@@ -197,7 +197,7 @@ check</code></pre>
 <pre><code>##          steps       date interval
 ## Original    26 2012-10-03     1835
 ## Imputed     26 2012-10-03     1835</code></pre>
-<p>Now the summary measures and the histogram</p>
+<p>Now the histogram and summary measures</p>
 <pre class="r"><code>#Aggregate the &quot;complete&quot; dataset by day (date), then plot a histogram
 d_complete_date&lt;-aggregate(d_complete$steps,list(d_complete$date),sum)
 names(d_complete_date)&lt;-c(&quot;date&quot;,&quot;steps&quot;)
